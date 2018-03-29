@@ -2,25 +2,23 @@
 
 const mongoose = require('mongoose');
 
+//author not a string - can we use object
+
 const blogPostSchema = mongoose.Schema ({
 	title: {type: String, required: true},
 	content: {type: String, required: true},
-	author: {type: String, required: true},
+	author: {
+			firstName: String,
+			lastName: String
+		},
 	created: {type: Date, required: true}
 
 });
 
-blogPostSchema.virtual('authorObj').get(function() {
+blogPostSchema.virtual('authorName').get(function() {
 
-	let author = this.author;
-	let authorArray = author.split(" ");
-
-	let authorObject = { 
-		firstname: authorArray[0],
-		lastname: authorArray[1]
-	};
-
-  return authorObject;
+	
+  return `${this.author.firstName} ${this.author.lastName}`;
 
 });
 
@@ -31,7 +29,7 @@ blogPostSchema.methods.serialize = function() {
     id: this._id,
     title: this.title,
     content: this.content,
-    author: this.author,
+    author: this.authorName,
     created: this.created
   };
 }
