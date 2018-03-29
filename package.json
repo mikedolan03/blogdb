@@ -1,0 +1,19 @@
+{
+  "name": "blogdb",
+  "version": "1.0.0",
+  "description": "Blog api using Mongo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "blog",
+    "api",
+    "mongo"
+  ],
+  "author": "Mike Dolna",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
