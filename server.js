@@ -12,11 +12,14 @@ const { BlogPost } = require('./models');
 const app = express();
 app.use(bodyParser.json());
 
+
+//GET Method
+
 app.get('/blog-posts', (req, res) => {
 
 	BlogPost
 		.find()
-		.limit(10)
+		.limit(15)
 		.then(blogposts => { 
 			res.json({
 				blogposts: blogposts.map (
@@ -29,6 +32,33 @@ app.get('/blog-posts', (req, res) => {
 		});
 
 });
+
+//post
+app.post('/blog-posts', (req, res) => {
+
+	const requiredFields = [];
+
+	BlogPost
+		.create({
+			title: req.body.title,
+			content: req.body.content,
+			author: req.body.author,
+			created: req.body.created
+		})
+		.then(blogpost => res.status(201).json(blogpost.serialize()))
+		.catch(err => {
+			console.error(err);
+			res.status(500).json({ message: 'Internal server error'});
+		});
+
+});
+//delete
+
+//put / update
+
+
+
+//--------------------------------server code--------------------------------------
 
 let server;
 
