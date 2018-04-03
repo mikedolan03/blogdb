@@ -16,21 +16,30 @@ app.use(bodyParser.json());
 //GET Method
 
 app.get('/blog-posts', (req, res) => {
-
-	BlogPost
-		.find()
-		.limit(15)
-		.then(blogposts => { 
-			res.json({
-				blogposts: blogposts.map (
-					(blogpost) => blogpost.serialize())
-			});
+ BlogPost
+  .find()
+   .limit(15)
+    .then(blogposts => { 
+	 res.json({
+	  blogposts: blogposts.map (
+	  (blogpost) => blogpost.serialize())
+	 });
 		} )
 		.catch(err => {
 			console.error(err);
 			res.status(500).json({ message: 'Internal server error'});
 		});
 
+});
+
+app.get('/blog-posts/:id', (req, res) => {
+	BlogPost
+		.findById(req.params.id)
+		.then(blogpost => res.json(blogpost.serialize()))
+		.catch(err => {
+			console.error(err);
+			res.status(500).json({ message: 'Internal server error '});
+		});
 });
 
 //post
@@ -54,9 +63,47 @@ app.post('/blog-posts', (req, res) => {
 });
 //delete
 
+app.delete('/blog-posts/:id', (req, res) => {
+
+	BlogPost
+		.findByIdAndRemove(req.params.id)
+		.then( blogpost => res.status(204).end())
+		.catch(err => res.status(500).json({message: 'Internal server error'}));
+ });
+
 //put / update
 
+app.put('/blog-posts/:id', (req, res) => { 
 
+	if(!(req.params.id && req.body.id && req.params.id === req.body.id)) {
+		const message = (
+			`Request path id (${req.params.id}) and request body id ` + 
+			`(${req.body.id}) must match`);
+		console.error(message);
+		return res.status(400).json({ message: message});  
+			
+	}
+
+	const toUpdate = {};
+	const updateableFields = ['title','content','author'];
+
+	updateableFields.forEach( field => {
+		if( field in req.body ) {
+			toUpdate[field] = req.body[field];
+		}
+	});
+
+	BlogPost
+	.findByIdAndUpdate(req.params.id, {$set: toUpdate })
+	.then( blogpost => res.status(204).end())
+	.catch(err => res.status(500).json({ message: 'Internal server error'}));
+
+});
+
+//catch any weird stuff
+app.use('*', function (req, res) { 
+	res.status(404).json({ message: 'Not found'});
+});
 
 //--------------------------------server code--------------------------------------
 
